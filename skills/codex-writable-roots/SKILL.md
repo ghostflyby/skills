@@ -30,7 +30,7 @@ they can be recreated on demand.
 1. Run the bundled script in read-only mode first:
 
 ```bash
-python3 "$CODEX_HOME/skills/codex-writable-roots/scripts/codex-writable-roots.py" inspect
+python3 "$CODEX_HOME/skills/ghostflyby-skills/codex-writable-roots/scripts/codex-writable-roots.py" inspect
 ```
 
 If `CODEX_HOME` is unset, use `~/.codex` as the skill root.
@@ -48,13 +48,13 @@ state.
 3. Generate a TOML snippet when the user asks what to add:
 
 ```bash
-python3 "$CODEX_HOME/skills/codex-writable-roots/scripts/codex-writable-roots.py" emit-toml
+python3 "$CODEX_HOME/skills/ghostflyby-skills/codex-writable-roots/scripts/codex-writable-roots.py" emit-toml
 ```
 
 4. Only mutate `~/.codex/config.toml` when the user explicitly asks to apply:
 
 ```bash
-python3 "$CODEX_HOME/skills/codex-writable-roots/scripts/codex-writable-roots.py" apply
+python3 "$CODEX_HOME/skills/ghostflyby-skills/codex-writable-roots/scripts/codex-writable-roots.py" apply
 ```
 
 The apply command creates a timestamped backup and merges the recommended roots
