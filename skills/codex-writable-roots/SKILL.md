@@ -11,6 +11,18 @@ Use this skill when a user wants to discover, generate, or maintain Codex
 `sandbox_workspace_write.writable_roots` for rebuildable toolchain caches and
 package directories.
 
+## Caveats
+
+- The extra writable roots from `[sandbox_workspace_write].writable_roots` only take effect
+  when `sandbox_mode = "workspace-write"` is set in the config profile. If the mode is
+  `"use_default"` or anything else, the extra roots are silently ignored.
+- In the Codex desktop app, the user must manually select **Custom** in the permissions
+  dialog for the extra writable roots to be applied. The default permission presets do
+  not include the custom writable roots from the config.
+- When inspecting or debugging writable-roots behavior, always verify
+  `sandbox_mode == workspace-write` and the effective writable-roots list in the
+  target environment.
+
 ## Workflow
 
 1. Run the bundled script in read-only mode first:
