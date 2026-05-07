@@ -76,7 +76,6 @@ def main() -> int:
         return 0
 
     parser.error(f"unknown command: {args.command}")
-    return 2
 
 
 def collect_roots(*, probe: bool) -> list[Root]:
@@ -519,12 +518,12 @@ def replace_sandbox_section(text: str, roots: list[str]) -> str:
 
 def find_section(lines: list[str], section: str) -> tuple[int | None, int]:
     target = f"[{section}]"
-    start = None
+    start = -1
     for idx, line in enumerate(lines):
         if line.strip() == target:
             start = idx
             break
-    if start is None:
+    if start == -1:
         return None, len(lines)
     end = len(lines)
     for idx in range(start + 1, len(lines)):
@@ -679,7 +678,7 @@ def first_path_env(name: str) -> Path | None:
 
 
 def normalize_path(path: str | Path) -> str:
-    raw = os.fspath(path)
+    raw = str(path)
     expanded = os.path.expandvars(os.path.expanduser(raw))
     return os.path.abspath(expanded).rstrip("/") or "/"
 
@@ -704,7 +703,7 @@ class CmdResult:
 
 
 def run_cmd(cmd: list[str]) -> CmdResult:
-    if shutil.which(cmd[0]) is None:
+    if shutil.which(str(cmd[0])) is None:  # noqa: Windows false positive; cmd[0] is always str on POSIX
         return CmdResult(False, "", f"{cmd[0]} not found")
     try:
         proc = subprocess.run(
