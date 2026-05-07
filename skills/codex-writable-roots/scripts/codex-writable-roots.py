@@ -130,20 +130,50 @@ def maven_roots() -> list[Root]:
 def swift_roots() -> list[Root]:
     env_path = first_path_env("SWIFTPM_HOME")
     if env_path:
-        path = env_path
-        source = "SWIFTPM_HOME"
+        cache_path = env_path
+        cache_source = "SWIFTPM_HOME"
     else:
-        path = cache_home() / "org.swift.swiftpm"
-        source = "default macOS cache"
-    return [
+        cache_path = cache_home() / "org.swift.swiftpm"
+        cache_source = "default macOS cache"
+
+    roots = [
         make_root(
             "SwiftPM",
             "recommended",
-            path,
-            source,
-            "Swift Package Manager cache and build artifacts",
-        )
+            cache_path,
+            cache_source,
+            "Swift Package Manager cache: cloned repos, manifests, prebuilts, artifacts",
+        ),
     ]
+
+    # Data directory: package fingerprints, collection config, SDKs.
+    # macOS puts it at ~/Library/org.swift.swiftpm (not under Caches).
+    # This is machine-generated metadata that can be recreated.
+    # SWIFTPM_HOME only controls the cache dir, not the data dir.
+    data_path = swiftpm_data_dir()
+    if data_path:
+        roots.append(
+            make_root(
+                "SwiftPM",
+                "recommended",
+                data_path,
+                "platform convention",
+                "SwiftPM data dir: fingerprints, collection config, SDKs; written during dependency resolution and build",
+            )
+        )
+
+    return roots
+
+
+def swiftpm_data_dir() -> Path | None:
+    """Return the SwiftPM data directory by platform convention."""
+    if sys.platform == "darwin":
+        return HOME / "Library" / "org.swift.swiftpm"
+    if os.name == "nt":
+        local_app_data = Path(os.environ.get("LOCALAPPDATA", HOME / "AppData" / "Local"))
+        return local_app_data / "swift-pm"
+    xdg_data = first_path_env("XDG_DATA_HOME") or HOME / ".local" / "share"
+    return xdg_data / "swift-pm"
 
 
 def go_roots(*, probe: bool) -> list[Root]:

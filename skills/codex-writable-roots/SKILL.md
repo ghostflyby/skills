@@ -1,15 +1,17 @@
 ---
 name: codex-writable-roots
-description: Inspect language and package-manager cache directories and generate or apply Codex sandbox_workspace_write.writable_roots entries. Use when configuring Codex writable roots for Gradle, Maven, SwiftPM, Go, Cargo, NuGet, Python, Node, Deno, Kotlin Native, vcpkg, or similar rebuildable toolchain caches.
+description: Inspect language and package-manager directories that are safely rebuildable and generate or apply Codex sandbox_workspace_write.writable_roots entries. Use when configuring Codex writable roots for Gradle, Maven, SwiftPM, Go, Cargo, NuGet, Python, Node, Deno, Kotlin Native, vcpkg, or similar rebuildable toolchain paths.
 metadata:
-  short-description: Generate Codex writable roots for tool caches
+  short-description: Generate Codex writable roots for rebuildable tool paths
 ---
 
 # Codex Writable Roots
 
 Use this skill when a user wants to discover, generate, or maintain Codex
-`sandbox_workspace_write.writable_roots` for rebuildable toolchain caches and
-package directories.
+`sandbox_workspace_write.writable_roots` for toolchain directories that are clearly and easily
+rebuildable without loss. The goal is to allow writes to the narrowest possible set of
+directories -- whether they are caches, data directories, or local stores -- as long as
+they can be recreated on demand.
 
 ## Caveats
 
@@ -34,8 +36,8 @@ python3 "$CODEX_HOME/skills/codex-writable-roots/scripts/codex-writable-roots.py
 If `CODEX_HOME` is unset, use `~/.codex` as the skill root.
 
 2. Review the table before proposing changes. Prefer `recommended` roots for
-routine sandbox writes; mention `optional` roots when they are useful but larger
-or less universally needed. Do not suggest `avoid` roots as writable roots.
+routine sandbox writes; mention `optional` roots for paths that are rebuildable but larger
+or less universally hit by common workflows. Do not suggest `avoid` roots as writable roots.
 
 If a root comes from a default convention rather than an explicit environment
 variable or config file, verify that convention with official docs or web search
@@ -63,7 +65,10 @@ into `[sandbox_workspace_write].writable_roots`.
 - Emit absolute paths. Codex config should not rely on `~`, environment
   variables, or interpolation for writable roots.
 - Keep writable roots narrow: cache/store subdirectories are preferred over
-  whole config homes, package-manager installations, or broad cache parents.
+  whole config homes, package-manager installations, or broad parent directories.
+- Prefer any path that is clearly and easily rebuildable without loss, regardless of whether
+  it is called a "cache" or a "data" directory. The deciding factor is whether the tool
+  can recreate it on demand with no user-visible side effects.
 - Treat results as environment-specific. Tool probes, config files, and
   environment variables should override defaults when available.
 - Re-check default path rules against official docs or online search when
