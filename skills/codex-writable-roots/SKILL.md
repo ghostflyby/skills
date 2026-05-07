@@ -30,10 +30,12 @@ they can be recreated on demand.
 1. Run the bundled script in read-only mode first:
 
 ```bash
-python3 "$CODEX_HOME/skills/ghostflyby-skills/codex-writable-roots/scripts/codex-writable-roots.py" inspect
+python3 <skill-dir>/scripts/codex-writable-roots.py inspect
 ```
 
-If `CODEX_HOME` is unset, use `~/.codex` as the skill root.
+The bundled script is at `scripts/codex-writable-roots.py` inside this skill
+directory. Resolve the full path from the skill's file location that Codex
+provides in the skill listing.
 
 2. Review the table before proposing changes. Prefer `recommended` roots for
 routine sandbox writes; mention `optional` roots for paths that are rebuildable but larger
@@ -48,13 +50,13 @@ state.
 3. Generate a TOML snippet when the user asks what to add:
 
 ```bash
-python3 "$CODEX_HOME/skills/ghostflyby-skills/codex-writable-roots/scripts/codex-writable-roots.py" emit-toml
+python3 <skill-dir>/scripts/codex-writable-roots.py emit-toml
 ```
 
 4. Only mutate `~/.codex/config.toml` when the user explicitly asks to apply:
 
 ```bash
-python3 "$CODEX_HOME/skills/ghostflyby-skills/codex-writable-roots/scripts/codex-writable-roots.py" apply
+python3 <skill-dir>/scripts/codex-writable-roots.py apply
 ```
 
 The apply command creates a timestamped backup and merges the recommended roots
