@@ -62,31 +62,6 @@ into `[sandbox_workspace_write].writable_roots`.
 
 
 
-## macOS Swift sandbox-exec note
-
-Codex uses macOS App Sandbox (Seatbelt) to isolate commands. macOS does not
-allow a sandboxed process to call `sandbox-exec` to nest another sandbox.
-SwiftPM calls `sandbox-exec` internally during `swift build` and `swift test`.
-When run inside Codex's sandbox, these nested calls fail with:
-
-```
-Sandbox: sandbox_exec(..., deny) - the process is already sandboxed
-```
-
-When running Swift commands on macOS inside a Codex session (sandbox_mode
-"workspace-write" or "read-only"), pass `--disable-sandbox`:
-
-```bash
-swift build --disable-sandbox
-swift test --disable-sandbox
-swift package --disable-sandbox <subcommand>
-```
-
-This flag tells SwiftPM to skip its own sandbox-exec call. Codex's sandbox
-already provides isolation, so the extra SwiftPM layer is redundant. The flag
-has no effect on non-macOS platforms, so it is safe to use unconditionally on
-macOS.
-
 ## Guardrails
 
 - Emit absolute paths. Codex config should not rely on `~`, environment
