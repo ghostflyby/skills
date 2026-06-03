@@ -1,6 +1,6 @@
 ---
 name: codex-patch-editing
-description: Use when editing files in Codex and the agent needs reliable apply_patch syntax, especially to avoid JSON, shell heredocs, cat/echo/sed rewrites, or malformed patch blocks.
+description: Use when editing files in Codex and the agent needs reliable apply_patch syntax
 ---
 
 # Codex Patch Editing / apply_patch 编辑指南
