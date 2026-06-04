@@ -1,6 +1,6 @@
 ---
 name: codex-writable-roots
-description: Inspect language and package-manager directories that are safely rebuildable and generate or apply Codex sandbox_workspace_write.writable_roots entries. Use when configuring Codex writable roots for Gradle, Maven, SwiftPM, Go, Cargo, NuGet, Python, Node, Deno, Kotlin Native, vcpkg, or similar rebuildable toolchain paths.
+description: Inspect language and package-manager directories that are safely rebuildable and generate or apply Codex sandbox_workspace_write.writable_roots entries. Use when configuring Codex writable roots for Gradle, Maven, SwiftPM, Go, Cargo, NuGet, Python, Node, Deno, Kotlin/JVM compile daemon, Kotlin Native, vcpkg, or similar rebuildable toolchain paths.
 metadata:
   short-description: Generate Codex writable roots for rebuildable tool paths
 ---
@@ -78,5 +78,14 @@ into `[sandbox_workspace_write].writable_roots`.
 - Re-check default path rules against official docs or online search when
   available. Do not blindly trust cwd-sensitive probes such as active package
   store commands.
+- For Kotlin/JVM compile daemon run files, prefer the narrow daemon state
+  directory over all Kotlin state. Kotlin source defaults
+  `runFilesPath` to `FileSystem.getRuntimeStateFilesPath("kotlin", "daemon")`:
+  macOS uses `~/Library/Application Support/kotlin/daemon`, Unix uses
+  `${XDG_DATA_HOME:-~/.local/share}/kotlin/daemon`, Windows uses
+  `%LOCALAPPDATA%\kotlin\daemon`, and an unavailable platform base falls back to
+  `~/.kotlin/daemon` before finally falling back to the temp directory. A
+  command-line or tool-provided `--daemon-runFilesPath` / `runFilesPath`
+  override should take precedence when it is known.
 - Read-only commands are safe for exploration; `apply` is the only command that
   writes config.

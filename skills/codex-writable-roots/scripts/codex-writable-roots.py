@@ -90,6 +90,7 @@ def collect_roots(*, probe: bool) -> list[Root]:
     roots.extend(python_roots(probe=probe))
     roots.extend(node_roots(probe=probe))
     roots.extend(deno_roots(probe=probe))
+    roots.extend(kotlin_daemon_roots())
     roots.extend(konan_roots())
     roots.extend(vcpkg_roots())
     roots.extend(codex_runtime_roots())
@@ -361,6 +362,51 @@ def deno_roots(*, probe: bool) -> list[Root]:
             "Deno dependency and transpile cache",
         )
     ]
+
+
+def kotlin_daemon_roots() -> list[Root]:
+    roots = [
+        make_root(
+            "Kotlin compile daemon",
+            "recommended",
+            kotlin_daemon_run_files_path(),
+            "Kotlin runtime-state default",
+            "Kotlin/JVM daemon run files; narrow rebuildable state directory",
+        )
+    ]
+
+    fallback = HOME / ".kotlin" / "daemon"
+    if normalize_path(fallback) != roots[0].path:
+        roots.append(
+            make_root(
+                "Kotlin compile daemon",
+                "optional",
+                fallback,
+                "Kotlin fallback",
+                "Fallback when the platform runtime-state base is unavailable",
+            )
+        )
+    return roots
+
+
+def kotlin_daemon_run_files_path() -> Path:
+    """Mirror Kotlin's FileSystem.getRuntimeStateFilesPath("kotlin", "daemon")."""
+    base = runtime_state_files_base_path()
+    if base.exists() and base.is_dir():
+        return base / "kotlin" / "daemon"
+    return HOME / ".kotlin" / "daemon"
+
+
+def runtime_state_files_base_path() -> Path:
+    if os.name == "nt":
+        return Path(os.environ.get("LOCALAPPDATA", tempfile_dir()))
+    if sys.platform == "darwin":
+        return HOME / "Library" / "Application Support"
+    return first_path_env("XDG_DATA_HOME") or HOME / ".local" / "share"
+
+
+def tempfile_dir() -> str:
+    return os.environ.get("TMPDIR") or os.environ.get("TEMP") or os.environ.get("TMP") or "/tmp"
 
 
 def konan_roots() -> list[Root]:
